@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold text-dark">Welcome, <span class="text-primary">{{ student.name }}</span>!</h2>
+        <p class="text-muted mb-0">
+            <i class="bi bi-mortarboard-fill me-1"></i> {{ student.department }} |
+            <strong>CGPA:</strong> {{ student.cgpa }}
+        </p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{{ url_for('student.update_profile') }}" class="btn btn-outline-primary shadow-sm">
+            <i class="bi bi-person-gear me-1"></i> Edit Profile & Resume
+        </a>
+    </div>
+</div>
+
+{% if not student.resume_file %}
+<div class="alert alert-warning shadow-sm border-start border-4 border-warning">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <strong>Missing Resume:</strong> You have not uploaded a resume yet. Please update your profile before applying to
+    drives.
+</div>
+{% endif %}
+
+<h4 class="fw-bold text-dark mt-5 mb-3"><i class="bi bi-clock-history me-2"></i>My Applications</h4>
+<div class="card shadow-sm border-0 mb-5">
+    <div class="card-body p-0">
+        {% if my_applications %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Company</th>
+                        <th>Role</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in my_applications %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">
+                            <i class="bi bi-building text-success me-2"></i>{{ app.drive.company.name }}
+                        </td>
+                        <td>{{ app.drive.job_title }}</td>
+                        <td>{{ app.applied_on.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if app.status == 'Applied' %}
+                            <span class="badge bg-secondary">Applied</span>
+                            {% elif app.status == 'Shortlisted' %}
+                            <span class="badge bg-primary">Shortlisted</span>
+                            {% elif app.status == 'Selected' %}
+                            <span class="badge bg-success"><i class="bi bi-star-fill me-1"></i>Selected</span>
+                            {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-file-earmark-x text-muted display-4 opacity-25 d-block mb-3"></i>
+            <p class="text-muted fs-5">You haven't applied to any drives yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<h4 class="fw-bold text-dark mb-3"><i class="bi bi-briefcase me-2"></i>Open Placement Drives</h4>
+<div class="row g-4 mb-5">
+    {% for drive in drives %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-top: 4px solid #0f4c81 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title text-dark fw-bold mb-0">{{ drive.job_title }}</h5>
+                </div>
+                <h6 class="card-subtitle text-success mb-3"><i class="bi bi-building me-1"></i>{{ drive.company.name }}
+                </h6>
+
+                <p class="small text-muted mb-3"
+                    style="display: -webkit-box; -line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ drive.description }}
+                </p>
+
+                <div class="alert alert-light border small p-2 mb-0">
+                    <div><i class="bi bi-check-circle text-primary me-1"></i> <strong>Eligibility:</strong> {{
+                        drive.eligibility }}</div>
+                    <div class="mt-1"><i class="bi bi-calendar-x text-danger me-1"></i> <strong>Deadline:</strong> {{
+                        drive.application_deadline }}</div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                {% if drive.id in applied_drive_ids %}
+                <button class="btn btn-secondary w-100 shadow-sm" disabled>
+                    <i class="bi bi-check-all me-1"></i> Already Applied
+                </button>
+                {% else %}
+                <form method="POST" action="{{ url_for('student.apply_to_drive', drive_id=drive.id) }}">
+                    <button type="submit" class="btn btn-primary w-100 shadow-sm fw-bold" {% if not student.resume_file
+                        %}disabled title="Upload resume first" {% endif %}
+                        onclick="return confirm('Submit your profile and resume to {{ drive.company.name }}?');">
+                        <i class="bi bi-send-fill me-1"></i> Apply Now
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info text-center py-4 border-0 shadow-sm">
+            <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+            No active placement drives are available at the moment. Check back later!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

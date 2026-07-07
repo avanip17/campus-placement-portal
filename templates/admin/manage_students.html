@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="bi bi-mortarboard me-2"></i>Student Records</h2>
+
+    <form method="GET" action="{{ url_for('admin.manage_students') }}" class="d-flex mx-3 flex-grow-1"
+        style="max-width: 400px;">
+        <input class="form-control me-2 shadow-sm" type="search" name="q" placeholder="Search Name or Department..."
+            value="{{ request.args.get('q', '') }}">
+        <button class="btn btn-primary shadow-sm" type="submit">Search</button>
+    </form>
+
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Student Name</th>
+                        <th>Department</th>
+                        <th>CGPA</th>
+                        <th>Contact / Email</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">
+                            {{ student.name }}
+                            {% if student.resume_file %}
+                            <a href="{{ url_for('static', filename='uploads/' + student.resume_file) }}" target="_blank"
+                                class="badge bg-info text-decoration-none ms-1" title="View Resume"><i
+                                    class="bi bi-file-pdf"></i> Resume</a>
+                            {% endif %}
+                        </td>
+                        <td>{{ student.department }}</td>
+                        <td><span class="badge bg-secondary">{{ student.cgpa }}</span></td>
+                        <td>
+                            <i class="bi bi-telephone-fill text-muted me-1 small"></i> {{ student.contact }}<br>
+                            <i class="bi bi-envelope-fill text-muted me-1 small"></i> {{ student.user.email }}
+                        </td>
+                        <td>
+                            {% if student.user.is_blacklisted %}
+                            <span class="badge bg-danger"><i class="bi bi-slash-circle me-1"></i>Blacklisted</span>
+                            {% else %}
+                            <span
+                                class="badge bg-success bg-opacity-10 text-success border border-success">Active</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('admin.toggle_blacklist', user_id=student.user_id) }}"
+                                class="btn btn-sm {% if student.user.is_blacklisted %}btn-primary{% else %}btn-outline-danger{% endif %}"
+                                onclick="return confirm('Change access for this student?');">
+                                <i class="bi bi-shield-lock"></i> {% if student.user.is_blacklisted %}Restore Access{%
+                                else %}Blacklist{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No students found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

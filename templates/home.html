@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="p-5 mb-5 rounded-4 shadow text-center text-white position-relative overflow-hidden"
+    style="background: linear-gradient(135deg, #0f4c81 0%, #2c3e50 100%);">
+
+    <div class="container-fluid py-5 position-relative" style="z-index: 2;">
+        <i class="bi bi-briefcase-fill display-1 text-warning mb-3 d-block"></i>
+        <h1 class="display-4 fw-bold mb-3">Institute Placement Portal</h1>
+        <p class="col-md-8 fs-4 mx-auto fw-light mb-4 opacity-75">
+            Connecting our brightest minds with industry-leading organizations.
+            A unified platform for campus recruitment.
+        </p>
+
+        <div class="d-flex justify-content-center gap-4 mb-5 text-dark fw-bold fs-6">
+            <span class="bg-white px-3 py-2 rounded-pill shadow-sm"><i
+                    class="bi bi-building-check text-success me-1"></i> Top Recruiters</span>
+            <span class="bg-white px-3 py-2 rounded-pill shadow-sm"><i
+                    class="bi bi-lightning-charge-fill text-warning me-1"></i> Fast Processing</span>
+            <span class="bg-white px-3 py-2 rounded-pill shadow-sm"><i
+                    class="bi bi-shield-lock-fill text-primary me-1"></i> Secure Records</span>
+        </div>
+
+        {% if not current_user.is_authenticated %}
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('auth.register_student') }}" class="btn btn-outline-light btn-lg px-4 border-2">
+                <i class="bi bi-mortarboard me-2"></i>I am a Student
+            </a>
+            <a href="{{ url_for('auth.register_company') }}"
+                class="btn btn-warning btn-lg px-4 shadow-sm text-dark fw-bold">
+                <i class="bi bi-building me-2"></i>Partner with Us (Company)
+            </a>
+        </div>
+        <div class="mt-4">
+            <a href="{{ url_for('auth.login') }}" class="text-white text-decoration-none">
+                Already registered? <span class="fw-bold text-warning border-bottom border-warning">Log in here</span>
+            </a>
+        </div>
+        {% else %}
+        <div class="mt-4">
+            <h3 class="fw-bold bg-white text-dark d-inline-block px-4 py-2 rounded shadow-sm">
+                Welcome back, <span class="text-primary">{{ current_user.role.capitalize() }}</span>!
+            </h3>
+            <br>
+            <a href="{{ url_for(current_user.role + '.dashboard') }}"
+                class="btn btn-warning btn-lg mt-3 shadow text-dark fw-bold">
+                Enter Dashboard <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row align-items-stretch g-4">
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm transition-hover"
+            style="background-color: #ffffff; border-top: 5px solid #0f4c81 !important;">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle"
+                        style="width: 80px; height: 80px;">
+                        <i class="bi bi-person-workspace fs-1 text-primary"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-dark">For Students</h3>
+                <p class="text-muted fs-6 mt-3">
+                    Create your academic profile, upload your latest resume, browse approved placement drives, and track
+                    your application statuses all in one place.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm transition-hover"
+            style="background-color: #ffffff; border-top: 5px solid #28a745 !important;">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle"
+                        style="width: 80px; height: 80px;">
+                        <i class="bi bi-briefcase fs-1 text-success"></i>
+                    </div>
+                </div>
+                <h3 class="fw-bold text-dark">For Recruiters</h3>
+                <p class="text-muted fs-6 mt-3">
+                    Register your organization, post job descriptions, set eligibility criteria, and seamlessly manage
+                    and shortlist student applications.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+</style>
+{% endblock %}

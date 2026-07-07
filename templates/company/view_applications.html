@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1 fw-bold text-dark">Applications Review</h2>
+        <h5 class="text-muted"><i class="bi bi-briefcase text-primary me-2"></i>{{ drive.job_title }}</h5>
+    </div>
+    <a href="{{ url_for('company.dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Candidate Name</th>
+                        <th>Academic Profile</th>
+                        <th>Resume</th>
+                        <th>Applied On</th>
+                        <th>Current Status</th>
+                        <th class="text-end pe-4">Update Decision</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">
+                            {{ app.student.name }}<br>
+                            <small class="text-muted fw-normal"><i class="bi bi-envelope"></i> {{ app.student.user.email
+                                }}</small>
+                        </td>
+                        <td>
+                            <div><strong>Dept:</strong> {{ app.student.department }}</div>
+                            <div><strong>CGPA:</strong> <span class="badge bg-secondary">{{ app.student.cgpa }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if app.student.resume_file %}
+                            <a href="{{ url_for('static', filename='uploads/' + app.student.resume_file) }}"
+                                target="_blank" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-file-earmark-pdf-fill"></i> View PDF
+                            </a>
+                            {% else %}
+                            <span class="text-muted small">Not uploaded</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ app.applied_on.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if app.status == 'Applied' %}
+                            <span class="badge bg-secondary">Applied</span>
+                            {% elif app.status == 'Shortlisted' %}
+                            <span class="badge bg-primary">Shortlisted</span>
+                            {% elif app.status == 'Selected' %}
+                            <span class="badge bg-success">Selected</span>
+                            {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <form method="POST"
+                                action="{{ url_for('company.update_application_status', app_id=app.id) }}"
+                                class="d-inline-flex align-items-center">
+                                <select name="status" class="form-select form-select-sm me-2 shadow-sm"
+                                    style="width: auto;">
+                                    <option value="Shortlisted" {% if app.status=='Shortlisted' %}selected{% endif %}>
+                                        Shortlist</option>
+                                    <option value="Selected" {% if app.status=='Selected' %}selected{% endif %}>Select
+                                    </option>
+                                    <option value="Rejected" {% if app.status=='Rejected' %}selected{% endif %}>Reject
+                                    </option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-success shadow-sm">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="bi bi-person-x text-muted display-4 opacity-25 d-block mb-3"></i>
+                            <p class="text-muted fs-5">No applications received yet for this drive.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

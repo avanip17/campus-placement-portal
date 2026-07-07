@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark"><i class="bi bi-building me-2 text-success"></i>Company Dashboard</h2>
+        <p class="text-muted mb-0">Welcome, {{ company.hr_contact }} ({{ company.name }})</p>
+    </div>
+    <a href="{{ url_for('company.create_drive') }}" class="btn btn-success shadow-sm fw-bold">
+        <i class="bi bi-plus-circle me-2"></i>Post New Drive
+    </a>
+</div>
+
+{% if company.approval_status != 'Approved' %}
+<div class="alert alert-warning shadow-sm border-start border-4 border-warning">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <strong>Account Pending:</strong> Your company profile is currently waiting for Admin approval. You can draft
+    placement drives, but students will not see them until your account is fully verified.
+</div>
+{% endif %}
+
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-header bg-white py-3 border-bottom">
+        <h5 class="mb-0 text-dark"><i class="bi bi-briefcase me-2 text-primary"></i>Your Placement Drives</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Job Title</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Total Applicants</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for drive in drives %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark">{{ drive.job_title }}</td>
+                        <td><i class="bi bi-calendar-event text-danger me-1"></i> {{ drive.application_deadline }}</td>
+
+                        <td>
+                            {% if drive.status == 'Approved' %}
+                            <span class="badge bg-success">Live (Approved)</span>
+                            {% elif drive.status == 'Rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% elif drive.status == 'Closed' %}
+                            <span class="badge bg-secondary">Closed</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Pending Admin Approval</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="badge bg-primary rounded-pill fs-6">{{ drive.applications|length }}</span>
+                        </td>
+
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('company.view_applications', drive_id=drive.id) }}"
+                                class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-people-fill me-1"></i> Review Applications
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="bi bi-inbox text-muted display-4 opacity-25 d-block mb-3"></i>
+                            <p class="text-muted fs-5">You haven't posted any placement drives yet.</p>
+                            <a href="{{ url_for('company.create_drive') }}" class="btn btn-success mt-2">Create your
+                                first drive</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
